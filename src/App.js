@@ -11,13 +11,14 @@ const App = () => {
   const [gameConfig, setGameConfig] = useState({
     totalPlayers: 0,
     numImposters: 0,
+    commonFootballerName: '' // Will store the randomly chosen common footballer name
   });
 
-  // State to manage game status messages
+  // State to manage game phases: 'discussion', 'voting', 'imposter_answer', 'game_over'
+  const [gamePhase, setGamePhase] = useState('discussion'); // Initial phase after setup
   const [gameStatus, setGameStatus] = useState('Waiting for players...');
 
   // State to hold the list of players.
-  // Initialized based on gameConfig.totalPlayers once game starts.
   const [players, setPlayers] = useState([]);
 
   // Modal related states
@@ -31,20 +32,27 @@ const App = () => {
   const [timerActive, setTimerActive] = useState(false);
   const timerRef = useRef(null);
 
+  // Voting related states
+  const [votes, setVotes] = useState({}); // Stores votes: { playerId: count }
+  const [votedPlayerId, setVotedPlayerId] = useState(null); // Player chosen by vote
+  const [imposterAnswerInput, setImposterAnswerInput] = useState(''); // Imposter's typed answer
+  const [gameOverMessage, setGameOverMessage] = useState(''); // Message displayed at game end
+
   // Effect to manage the countdown timer
   useEffect(() => {
-    if (timerActive && timeLeft > 0) {
+    if (timerActive && timeLeft > 0 && gamePhase === 'discussion') {
       clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft === 0 && gamePhase === 'discussion') {
       clearInterval(timerRef.current);
       setTimerActive(false);
-      setGameStatus('Time is up! Discuss and vote.');
+      setGameStatus('Time is up! Voting has begun.');
+      setGamePhase('voting'); // Automatically transition to voting phase
     }
     return () => clearInterval(timerRef.current);
-  }, [timerActive, timeLeft]);
+  }, [timerActive, timeLeft, gamePhase]);
 
   // Function to format time from seconds into MM:SS format
   const formatTime = (seconds) => {
@@ -55,9 +63,14 @@ const App = () => {
 
   // Function to handle game start from SetupScreen
   const handleGameStartFromSetup = (config) => {
-    setGameConfig(config);
+    // Select ONE random footballer name from the list to be common for all footballers
+    const randomFootballerIndex = Math.floor(Math.random() * FOOTBALLERS_LIST.length);
+    const commonFootballerName = FOOTBALLERS_LIST[randomFootballerIndex];
+
+    setGameConfig({ ...config, commonFootballerName }); // Store common footballer name in config
     setGameStarted(true); // Transition to game screen
-    
+    setGamePhase('discussion'); // Set initial phase
+
     // Initialize players based on the setup config
     const initialPlayers = [];
     for (let i = 1; i <= config.totalPlayers; i++) {
@@ -66,24 +79,22 @@ const App = () => {
         name: `Player ${i}`,
         role: 'Unknown',
         assignedName: 'Unknown',
-        isRoleVisible: false // This flag will still be used to track if a player has seen their role via modal
+        isRoleVisible: false
       });
     }
-    // Set initial players and then assign roles
     setPlayers(initialPlayers);
-    assignRoles(initialPlayers, config.numImposters); 
-    
-    setGameStatus('Game in progress! Find the Imposter!');
+    assignRoles(initialPlayers, config.numImposters, commonFootballerName);
+
+    setGameStatus('Roles assigned. Click "Start Round" to begin discussion!');
     setTimeLeft(300); // Reset timer to 5 minutes
-    setTimerActive(true); // Activate the timer
+    setTimerActive(false); // Timer is NOT active yet
   };
 
   // Function to assign roles and specific names to players
-  const assignRoles = (currentPlayers, numImposters) => {
-    // Create a pool of roles based on numImposters and remaining players as Footballers
+  const assignRoles = (currentPlayers, numImposters, commonFootballerName) => {
     const rolesPool = Array(numImposters).fill('Imposter');
     const numFootballers = currentPlayers.length - numImposters;
-    
+
     if (numFootballers < 0) {
       console.error('Error: More imposters than players!');
       setGameStatus('Error: Invalid setup (more imposters than players).');
@@ -91,40 +102,129 @@ const App = () => {
     }
     rolesPool.push(...Array(numFootballers).fill('Footballer'));
 
-    // Select ONE random footballer name from the list to be common for all footballers
-    const randomFootballerIndex = Math.floor(Math.random() * FOOTBALLERS_LIST.length);
-    const commonFootballerName = FOOTBALLERS_LIST[randomFootballerIndex];
-
-    // Shuffle the roles
     const shuffledRoles = rolesPool.sort(() => Math.random() - 0.5);
 
-    // Assign roles and specific names to players
     const playersWithAssignedRoles = currentPlayers.map((player, index) => {
-      let assignedRoleType = shuffledRoles[index]; // 'Imposter' or 'Footballer'
+      let assignedRoleType = shuffledRoles[index];
       let assignedNameForPlayer;
 
       if (assignedRoleType === 'Imposter') {
         assignedNameForPlayer = 'YOU ARE THE IMPOSTER';
       } else {
-        // All footballers get the same, randomly chosen name
-        assignedNameForPlayer = commonFootballerName; 
+        assignedNameForPlayer = commonFootballerName;
       }
 
       return {
         ...player,
-        role: assignedRoleType, // 'Imposter' or 'Footballer'
-        assignedName: assignedNameForPlayer, // Specific name or Imposter message
-        isRoleVisible: false // Ensure roles are hidden initially on the main cards
+        role: assignedRoleType,
+        assignedName: assignedNameForPlayer,
+        isRoleVisible: false
       };
     });
     setPlayers(playersWithAssignedRoles);
   };
 
+  // --- Game Phase Control Functions ---
+  const startRound = () => {
+    if (gamePhase === 'discussion' && !timerActive) {
+      setTimerActive(true);
+      setGameStatus('Round in progress! Find the Imposter!');
+    }
+  };
+
+  const pauseRound = () => {
+    setTimerActive(false);
+    setGameStatus('Round Paused.');
+    clearInterval(timerRef.current);
+  };
+
+  const startVotingPhase = () => {
+    clearInterval(timerRef.current);
+    setTimerActive(false);
+    setGamePhase('voting');
+    setGameStatus('Time to vote! Choose who you think the Imposter is.');
+    setVotes({}); // Reset votes for a new voting phase
+  };
+
+  const handleVote = (votedForPlayerId) => {
+    // For simplicity, each player can vote once.
+    // In a real game, you'd track who voted for whom.
+    setVotes(prevVotes => ({
+      ...prevVotes,
+      [votedForPlayerId]: (prevVotes[votedForPlayerId] || 0) + 1
+    }));
+    setGameStatus(`Vote cast for Player ${votedForPlayerId}.`);
+
+    // After all players vote (or a set number of votes), determine outcome
+    // For now, let's assume a simple majority after a few votes, or a "Confirm Votes" button.
+    // For this example, let's just count all votes and then proceed after a short delay
+    // or when a "Confirm Votes" button is clicked (which we'll add).
+  };
+
+  const confirmVotes = () => {
+    if (Object.keys(votes).length === 0) {
+      setGameStatus('No votes cast. Game ends in a draw or re-vote.');
+      setGameOverMessage('No votes cast. Game ends in a draw.');
+      setGamePhase('game_over');
+      return;
+    }
+
+    let maxVotes = 0;
+    let suspectedPlayerId = null;
+    let tie = false;
+
+    for (const id in votes) {
+      if (votes[id] > maxVotes) {
+        maxVotes = votes[id];
+        suspectedPlayerId = parseInt(id);
+        tie = false;
+      } else if (votes[id] === maxVotes) {
+        tie = true; // It's a tie
+      }
+    }
+
+    if (tie || suspectedPlayerId === null) {
+      setGameStatus('Voting resulted in a tie or no clear suspect. Footballers win by default.');
+      setGameOverMessage('It\'s a tie! Footballers win as Imposter was not clearly identified.');
+      setGamePhase('game_over');
+      return;
+    }
+
+    const suspectedPlayer = players.find(p => p.id === suspectedPlayerId);
+
+    if (suspectedPlayer.role === 'Imposter') {
+      setGameStatus(`Player ${suspectedPlayer.name} was voted out! They were the Imposter!`);
+      setVotedPlayerId(suspectedPlayerId); // Store who was voted out
+      setGamePhase('imposter_answer'); // Imposter gets to answer
+    } else {
+      setGameStatus(`Player ${suspectedPlayer.name} was voted out. They were a Footballer!`);
+      setGameOverMessage('Footballers voted out a Footballer! Imposter wins!');
+      setGamePhase('game_over');
+    }
+  };
+
+  const handleImposterAnswerSubmit = () => {
+    const imposterPlayer = players.find(p => p.id === votedPlayerId);
+    if (!imposterPlayer || imposterPlayer.role !== 'Imposter') {
+      setGameOverMessage('Error: No Imposter to answer or wrong phase.');
+      setGamePhase('game_over');
+      return;
+    }
+
+    // Check if the imposter's answer matches the common footballer name
+    if (imposterAnswerInput.trim().toLowerCase() === gameConfig.commonFootballerName.toLowerCase()) {
+      setGameOverMessage(`The Imposter (${imposterPlayer.name}) correctly named "${gameConfig.commonFootballerName}"! Imposter wins!`);
+    } else {
+      setGameOverMessage(`The Imposter (${imposterPlayer.name}) failed to name "${gameConfig.commonFootballerName}". Footballers win!`);
+    }
+    setGamePhase('game_over');
+  };
+
   // --- Modal Functions ---
   const openRoleModal = (player) => {
     setSelectedPlayerId(player.id);
-    setPlayerNameInput(player.name); // Pre-fill with current name
-    setIsCardFlipped(false); // Ensure card is not flipped when opening
+    setPlayerNameInput(player.name);
+    setIsCardFlipped(false);
     setShowRoleModal(true);
   };
 
@@ -142,9 +242,6 @@ const App = () => {
     setIsCardFlipped(true);
 
     setTimeout(() => {
-      // The isRoleVisible flag will still be set to true here,
-      // but it will no longer control a visible element on the main card.
-      // It could be useful for other game logic later if needed.
       setPlayers(prevPlayers => prevPlayers.map(p =>
         p.id === selectedPlayerId ? { ...p, isRoleVisible: true } : p
       ));
@@ -167,6 +264,37 @@ const App = () => {
     return <SetupScreen onStartGame={handleGameStartFromSetup} />;
   }
 
+  // Render game over screen
+  if (gamePhase === 'game_over') {
+    return (
+      <div className="app-container game-over-screen">
+        <div className="game-card game-over-card">
+          <h1 className="game-title">Game Over!</h1>
+          <p className="game-over-message">{gameOverMessage}</p>
+          <button
+            onClick={() => {
+              // Reset all game states to go back to setup
+              setGameStarted(false);
+              setGameConfig({ totalPlayers: 0, numImposters: 0, commonFootballerName: '' });
+              setGamePhase('discussion');
+              setGameStatus('Waiting for players...');
+              setPlayers([]);
+              setTimeLeft(300);
+              setTimerActive(false);
+              setVotes({});
+              setVotedPlayerId(null);
+              setImposterAnswerInput('');
+              setGameOverMessage('');
+            }}
+            className="setup-start-btn" // Reusing setup button style
+          >
+            Play Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       <div className="game-card">
@@ -178,11 +306,10 @@ const App = () => {
           Current Status: <span className="status-text">{gameStatus}</span>
         </div>
 
-        {timerActive && (
-          <div className="timer-display">
-            Time Left: {formatTime(timeLeft)}
-          </div>
-        )}
+        {/* Timer is always displayed now, but only counts down when active */}
+        <div className="timer-display">
+          Time Left: {formatTime(timeLeft)}
+        </div>
 
         <div className="player-list-section">
           <h2 className="players-heading">Players</h2>
@@ -194,35 +321,82 @@ const App = () => {
                 onClick={() => openRoleModal(player)}
               >
                 <span className="player-name">{player.name}</span>
-                {/* REMOVED: The span that displayed the generic role (FOOTBALLER/IMPOSTER) */}
-                {/* {player.isRoleVisible && (
-                  <span className={`player-role ${
-                    player.role === 'Imposter' ? 'role-imposter' : 'role-footballer'
-                  }`}>
-                    {player.role === 'Imposter' ? 'IMPOSTER' : 'FOOTBALLER'}
-                  </span>
-                )} */}
               </div>
             ))}
           </div>
         </div>
 
         <div className="action-buttons">
+          {gamePhase === 'discussion' && (
+            <>
+              {!timerActive ? (
+                <button onClick={startRound} className="start-game-btn">
+                  Start Round
+                </button>
+              ) : (
+                <button onClick={pauseRound} className="pause-game-btn">
+                  Pause
+                </button>
+              )}
+              <button onClick={startVotingPhase} className="vote-time-btn">
+                Voting Time
+              </button>
+            </>
+          )}
+
+          {gamePhase === 'voting' && (
+            <div className="voting-section">
+              <h3>Vote for Imposter:</h3>
+              <div className="vote-buttons-grid">
+                {players.map(player => (
+                  <button
+                    key={`vote-${player.id}`}
+                    onClick={() => handleVote(player.id)}
+                    className="vote-player-btn"
+                  >
+                    {player.name} ({votes[player.id] || 0})
+                  </button>
+                ))}
+              </div>
+              <button onClick={confirmVotes} className="confirm-vote-btn">
+                Confirm Votes
+              </button>
+            </div>
+          )}
+
+          {gamePhase === 'imposter_answer' && votedPlayerId && (
+            <div className="imposter-answer-section">
+              <h3>Imposter's Last Stand!</h3>
+              <p>You were voted out. Prove you are a Footballer by naming the common footballer:</p>
+              <input
+                type="text"
+                value={imposterAnswerInput}
+                onChange={(e) => setImposterAnswerInput(e.target.value)}
+                placeholder="Enter common footballer name"
+                className="imposter-answer-input"
+                autoFocus
+              />
+              <button onClick={handleImposterAnswerSubmit} className="submit-answer-btn">
+                Submit Answer
+              </button>
+            </div>
+          )}
+
           <button onClick={() => {
-            const resetPlayers = players.map((player, index) => ({
-              ...player,
-              name: `Player ${index + 1}`,
-              role: 'Unknown',
-              assignedName: 'Unknown',
-              isRoleVisible: false
-            }));
-            setPlayers(resetPlayers);
-            assignRoles(resetPlayers, gameConfig.numImposters); 
-            setGameStatus('Game in progress! Find the Imposter!');
+            // Reset all game states to go back to setup
+            setGameStarted(false);
+            setGameConfig({ totalPlayers: 0, numImposters: 0, commonFootballerName: '' });
+            setGamePhase('discussion'); // Reset phase for next game
+            setGameStatus('Waiting for players...');
+            setPlayers([]);
             setTimeLeft(300);
-            setTimerActive(true);
-          }} className="start-game-btn">
-            Restart Game
+            setTimerActive(false);
+            setVotes({});
+            setVotedPlayerId(null);
+            setImposterAnswerInput('');
+            setGameOverMessage('');
+          }} className="restart-game-btn">
+            New Game
           </button>
         </div>
 

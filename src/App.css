@@ -451,3 +451,216 @@ code {
     padding: 0.6rem 2rem;
   }
 }
+/* src/App.css (Add these new styles to your existing App.css) */
+
+/* --- New Button Styles (Pause, Voting Time, Vote Player, Confirm Vote, Submit Answer) --- */
+.pause-game-btn,
+.vote-time-btn,
+.vote-player-btn,
+.confirm-vote-btn,
+.submit-answer-btn {
+  color: #fff;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: scale(1);
+  transition: all 0.3s ease-in-out;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  margin: 0.5rem; /* Add some margin for spacing */
+}
+
+.pause-game-btn {
+  background-color: #FF8C00; /* Dark Orange */
+}
+
+.pause-game-btn:hover {
+  background-color: #CC7000; /* Darker Orange */
+  transform: scale(1.05);
+}
+
+.pause-game-btn:focus {
+  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.5);
+}
+
+.vote-time-btn {
+  background-color: #8A2BE2; /* Blue Violet */
+}
+
+.vote-time-btn:hover {
+  background-color: #6A1BA0; /* Darker Blue Violet */
+  transform: scale(1.05);
+}
+
+.vote-time-btn:focus {
+  box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.5);
+}
+
+.vote-player-btn {
+  background-color: #4682B4; /* Steel Blue */
+  padding: 0.6rem 1.2rem; /* Slightly smaller for grid */
+  font-size: 0.9rem;
+}
+
+.vote-player-btn:hover {
+  background-color: #36678C;
+  transform: scale(1.03);
+}
+
+.vote-player-btn:focus {
+  box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.5);
+}
+
+.confirm-vote-btn {
+  background-color: #008000; /* Green */
+  margin-top: 1rem;
+}
+
+.confirm-vote-btn:hover {
+  background-color: #006400; /* Dark Green */
+  transform: scale(1.05);
+}
+
+.confirm-vote-btn:focus {
+  box-shadow: 0 0 0 4px rgba(0, 128, 0, 0.5);
+}
+
+.submit-answer-btn {
+  background-color: #DC143C; /* Crimson */
+  margin-top: 1rem;
+}
+
+.submit-answer-btn:hover {
+  background-color: #B20C2F; /* Darker Crimson */
+  transform: scale(1.05);
+}
+
+.submit-answer-btn:focus {
+  box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.5);
+}
+
+/* --- Voting Section Styles --- */
+.voting-section {
+  background-color: #F0F8FF; /* AliceBlue */
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+.voting-section h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #4A5568;
+}
+
+.vote-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid */
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* --- Imposter Answer Section Styles --- */
+.imposter-answer-section {
+  background-color: #FFFACD; /* Lemon Chiffon */
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+.imposter-answer-section h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #4A5568;
+}
+
+.imposter-answer-section p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.imposter-answer-input {
+  width: calc(100% - 40px); /* Adjust for padding */
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.imposter-answer-input:focus {
+  border-color: #FFD700; /* Gold */
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+}
+
+/* --- Game Over Screen Styles --- */
+.game-over-screen {
+  background: linear-gradient(to bottom right, #FF4500, #FFD700); /* OrangeRed to Gold */
+  color: #fff;
+}
+
+.game-over-card {
+  background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+  color: #333;
+  text-align: center;
+  padding: 3rem;
+}
+
+.game-over-message {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: #4A5568;
+}
+
+/* Reusing setup-start-btn for Play Again */
+.setup-start-btn {
+  background-color: #4CAF50; /* Green for Play Again */
+  color: #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.setup-start-btn:hover {
+  background-color: #45A049;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Styling for the new restart-game-btn */
+.restart-game-btn {
+  background-color: #6B7280; /* Gray */
+  color: #fff;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: scale(1);
+  transition: all 0.3s ease-in-out;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  margin: 0.5rem;
+}
+
+.restart-game-btn:hover {
+  background-color: #4B5563; /* Darker Gray */
+  transform: scale(1.05);
+}
+
+.restart-game-btn:focus {
+  box-shadow: 0 0 0 4px rgba(107, 114, 128, 0.5);
+}
