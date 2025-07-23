@@ -664,3 +664,10 @@ code {
 .restart-game-btn:focus {
   box-shadow: 0 0 0 4px rgba(107, 114, 128, 0.5);
 }
+
+/* New style for the smaller restart button during voting phase */
+.restart-game-btn.voting-phase-size {
+  padding: 0.5rem 1rem; /* Smaller padding */
+  font-size: 0.8rem; /* Smaller font size */
+  margin: 0.25rem; /* Reduced margin */
+}

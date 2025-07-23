@@ -395,7 +395,8 @@ const App = () => {
             setVotedPlayerId(null);
             setImposterAnswerInput('');
             setGameOverMessage('');
-          }} className="restart-game-btn">
+          }}   className={`restart-game-btn ${gamePhase === 'voting' ? 'voting-phase-size' : ''}`}
+          >
             New Game
           </button>
         </div>
