@@ -655,47 +655,6 @@ code {
   outline: none;
   margin: 0.5rem;
 }
-/* src/App.css (Add these new styles to your existing App.css) */
-
-/* --- Logo and Header Styles --- */
-.game-header {
-  display: flex;
-  flex-direction: column; /* Stack logo and title vertically */
-  align-items: center;
-  margin-bottom: 2rem; /* Space below the header */
-}
-
-.game-logo {
-  width: 80px; /* Adjust size as needed */
-  height: 80px; /* Adjust size as needed */
-  margin-bottom: 0.5rem; /* Space between logo and title */
-}
-
-/* Adjust game-title to remove extra padding/margin if needed due to new container */
-.game-title {
-  margin-top: 0;
-  margin-bottom: 0; /* Already 0 from previous styles, but ensure */
-  font-size: 3rem; /* Keep original size */
-}
-
-/* Responsive adjustment for game-header */
-@media (min-width: 640px) {
-  .game-header {
-    flex-direction: row; /* Align logo and title horizontally on larger screens */
-    justify-content: center;
-    gap: 1rem; /* Space between logo and title */
-  }
-
-  .game-logo {
-    width: 100px; /* Slightly larger on desktop */
-    height: 100px;
-    margin-bottom: 0; /* No bottom margin when horizontal */
-  }
-
-  .game-title {
-    font-size: 3.75rem; /* Match previous text-6xl for sm: */
-  }
-}
 
 .restart-game-btn:hover {
   background-color: #4B5563; /* Darker Gray */

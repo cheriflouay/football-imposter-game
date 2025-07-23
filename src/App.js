@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css'; // Import the CSS file
 import SetupScreen from './SetupScreen'; // Import the SetupScreen component
 import FOOTBALLERS_LIST from './footballers.json'; // Import the JSON file
-import FootballImposterLogo from './assets/football-imposter-logo.svg'; // Import the SVG logo
 
 // Main App component for the Football Imposter game interface
 const App = () => {
@@ -12,6 +11,7 @@ const App = () => {
   const [gameConfig, setGameConfig] = useState({
     totalPlayers: 0,
     numImposters: 0,
+    commonFootballerName: '' // Will store the randomly chosen common footballer name
   });
 
   // State to manage game phases: 'discussion', 'voting', 'imposter_answer', 'game_over'
@@ -154,12 +154,17 @@ const App = () => {
       [votedForPlayerId]: (prevVotes[votedForPlayerId] || 0) + 1
     }));
     setGameStatus(`Vote cast for Player ${votedForPlayerId}.`);
+
+    // After all players vote (or a set number of votes), determine outcome
+    // For now, let's assume a simple majority after a few votes, or a "Confirm Votes" button.
+    // For this example, let's just count all votes and then proceed after a short delay
+    // or when a "Confirm Votes" button is clicked (which we'll add).
   };
 
   const confirmVotes = () => {
     if (Object.keys(votes).length === 0) {
       setGameStatus('No votes cast. Game ends in a draw or re-vote.');
-      setGameOverMessage('No votes cast. Footballers win by default as Imposter was not identified.');
+      setGameOverMessage('No votes cast. Game ends in a draw.');
       setGamePhase('game_over');
       return;
     }
@@ -293,13 +298,9 @@ const App = () => {
   return (
     <div className="app-container">
       <div className="game-card">
-        {/* Logo and Title */}
-        <div className="game-header">
-          <img src={FootballImposterLogo} alt="Football Imposter Logo" className="game-logo" />
-          <h1 className="game-title">
-            Football Imposter
-          </h1>
-        </div>
+        <h1 className="game-title">
+          ⚽ Football Imposter 🕵️‍♂️
+        </h1>
 
         <div className="status-display">
           Current Status: <span className="status-text">{gameStatus}</span>
@@ -381,22 +382,20 @@ const App = () => {
             </div>
           )}
 
-          {/* The "New Game" button, dynamically sized */}
-          <button
-            onClick={() => {
-              setGameStarted(false);
-              setGameConfig({ totalPlayers: 0, numImposters: 0, commonFootballerName: '' });
-              setGamePhase('discussion');
-              setGameStatus('Waiting for players...');
-              setPlayers([]);
-              setTimeLeft(300);
-              setTimerActive(false);
-              setVotes({});
-              setVotedPlayerId(null);
-              setImposterAnswerInput('');
-              setGameOverMessage('');
-            }}
-            className={`restart-game-btn ${gamePhase === 'voting' ? 'voting-phase-size' : ''}`}
+          <button onClick={() => {
+            // Reset all game states to go back to setup
+            setGameStarted(false);
+            setGameConfig({ totalPlayers: 0, numImposters: 0, commonFootballerName: '' });
+            setGamePhase('discussion'); // Reset phase for next game
+            setGameStatus('Waiting for players...');
+            setPlayers([]);
+            setTimeLeft(300);
+            setTimerActive(false);
+            setVotes({});
+            setVotedPlayerId(null);
+            setImposterAnswerInput('');
+            setGameOverMessage('');
+          }}   className={`restart-game-btn ${gamePhase === 'voting' ? 'voting-phase-size' : ''}`}
           >
             New Game
           </button>
