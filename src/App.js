@@ -11,7 +11,6 @@ const App = () => {
   const [gameConfig, setGameConfig] = useState({
     totalPlayers: 0,
     numImposters: 0,
-    // commonFootballerName is no longer passed from setup, but derived here
   });
 
   // State to manage game status messages
@@ -67,12 +66,11 @@ const App = () => {
         name: `Player ${i}`,
         role: 'Unknown',
         assignedName: 'Unknown',
-        isRoleVisible: false
+        isRoleVisible: false // This flag will still be used to track if a player has seen their role via modal
       });
     }
     // Set initial players and then assign roles
     setPlayers(initialPlayers);
-    // Pass initialPlayers and numImposters to assignRoles
     assignRoles(initialPlayers, config.numImposters); 
     
     setGameStatus('Game in progress! Find the Imposter!');
@@ -81,7 +79,6 @@ const App = () => {
   };
 
   // Function to assign roles and specific names to players
-  // Now takes currentPlayers and numImposters as arguments
   const assignRoles = (currentPlayers, numImposters) => {
     // Create a pool of roles based on numImposters and remaining players as Footballers
     const rolesPool = Array(numImposters).fill('Imposter');
@@ -145,6 +142,9 @@ const App = () => {
     setIsCardFlipped(true);
 
     setTimeout(() => {
+      // The isRoleVisible flag will still be set to true here,
+      // but it will no longer control a visible element on the main card.
+      // It could be useful for other game logic later if needed.
       setPlayers(prevPlayers => prevPlayers.map(p =>
         p.id === selectedPlayerId ? { ...p, isRoleVisible: true } : p
       ));
@@ -194,35 +194,29 @@ const App = () => {
                 onClick={() => openRoleModal(player)}
               >
                 <span className="player-name">{player.name}</span>
-                {/* Display generic role (Footballer/Imposter) on main card if revealed */}
-                {player.isRoleVisible && (
+                {/* REMOVED: The span that displayed the generic role (FOOTBALLER/IMPOSTER) */}
+                {/* {player.isRoleVisible && (
                   <span className={`player-role ${
                     player.role === 'Imposter' ? 'role-imposter' : 'role-footballer'
                   }`}>
                     {player.role === 'Imposter' ? 'IMPOSTER' : 'FOOTBALLER'}
                   </span>
-                )}
+                )} */}
               </div>
             ))}
           </div>
         </div>
 
         <div className="action-buttons">
-          {/* The "Start Game" button is now on the SetupScreen */}
           <button onClick={() => {
-            // This button is now primarily for re-starting or resetting if needed
-            // For a fresh start, you might navigate back to setup or reset state.
-            // For now, it will just re-assign roles and restart timer with current config.
-            // We need to re-initialize players to their default names before re-assigning roles
             const resetPlayers = players.map((player, index) => ({
               ...player,
-              name: `Player ${index + 1}`, // Reset to default Player N name
+              name: `Player ${index + 1}`,
               role: 'Unknown',
               assignedName: 'Unknown',
               isRoleVisible: false
             }));
-            setPlayers(resetPlayers); // Update players state before assigning roles
-            // Re-assign roles based on the current game config (totalPlayers, numImposters)
+            setPlayers(resetPlayers);
             assignRoles(resetPlayers, gameConfig.numImposters); 
             setGameStatus('Game in progress! Find the Imposter!');
             setTimeLeft(300);
@@ -266,7 +260,7 @@ const App = () => {
                   <p className={`revealed-role-text ${
                     currentPlayerInModal.role === 'Imposter' ? 'role-imposter-modal' : 'role-footballer-modal'
                   }`}>
-                    {currentPlayerInModal.assignedName} {/* Displays specific footballer name or "YOU ARE THE IMPOSTER" */}
+                    {currentPlayerInModal.assignedName}
                   </p>
                   <button onClick={closeModal} className="close-role-btn">
                     Got It!
