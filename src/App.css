@@ -671,3 +671,17 @@ code {
   font-size: 0.8rem; /* Smaller font size */
   margin: 0.25rem; /* Reduced margin */
 }
+
+.setup-logo {
+  width: 300px; /* Increased significantly for a very prominent logo */
+  height: 250px; /* Increased significantly for a very prominent logo */
+  margin-bottom: 2rem; /* Slightly increased space between logo and title for better visual separation */
+  display: block; /* Ensures it acts as a block element for centering */
+  margin-left: auto; /* Centers the logo horizontally */
+  margin-right: auto; /* Centers the logo horizontally */
+}
+
+/* You might want to adjust setup-title margin-top if needed */
+.setup-title {
+  margin-top: 0; /* Ensure no default margin pushes it down */
+}
