@@ -1,38 +1,453 @@
-.App {
-  text-align: center;
+/* src/App.css */
+
+/* Global styles for the app container */
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #4CAF50, #2196F3); /* from-green-400 to-blue-500 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem; /* p-4 */
+  font-family: 'Inter', sans-serif; /* font-inter */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Game card styling */
+.game-card {
+  background-color: #fff; /* bg-white */
+  padding: 2rem; /* p-8 */
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+  width: 100%; /* w-full */
+  max-width: 42rem; /* max-w-2xl (approx 672px) */
+  transform: scale(1); /* initial transform for transition */
+  transition: transform 0.3s ease-in-out; /* transition-all duration-300 */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.game-card:hover {
+  transform: scale(1.05); /* hover:scale-105 */
+}
+
+/* Game Title styling */
+.game-title {
+  font-size: 3rem; /* text-5xl */
+  font-weight: 800; /* font-extrabold */
+  text-align: center; /* text-center */
+  color: #2D3748; /* text-gray-800 */
+  margin-bottom: 2rem; /* mb-8 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* drop-shadow-lg (simplified) */
+}
+
+/* Status display styling */
+.status-display {
+  background-color: #F7FAFC; /* bg-gray-100 */
+  padding: 1rem; /* p-4 */
+  border-radius: 0.5rem; /* rounded-lg */
+  margin-bottom: 1.5rem; /* mb-6 */
+  text-align: center; /* text-center */
+  color: #4A5568; /* text-gray-700 */
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); /* shadow-inner */
+}
+
+.status-text {
+  color: #2563EB; /* text-blue-600 */
+}
+
+/* Timer display styling */
+.timer-display {
+  background-color: #FEF3C7; /* bg-yellow-100 */
+  padding: 0.75rem; /* p-3 */
+  border-radius: 0.5rem; /* rounded-lg */
+  margin-bottom: 1.5rem; /* mb-6 */
+  text-align: center; /* text-center */
+  color: #92400E; /* text-yellow-800 */
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 700; /* font-bold */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+}
+
+/* Player list section styling */
+.player-list-section {
+  margin-bottom: 2rem; /* mb-8 */
+}
+
+.players-heading {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700; /* font-bold */
+  color: #2D3748; /* text-gray-800 */
+  margin-bottom: 1rem; /* mb-4 */
+  text-align: center; /* text-center */
+}
+
+.player-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* grid-cols-1 */
+  gap: 1rem; /* gap-4 */
+}
+
+/* Player card styling */
+.player-card {
+  background-color: #F3E8FF; /* bg-purple-100 */
+  padding: 1rem; /* p-4 */
+  border-radius: 0.5rem; /* rounded-lg */
+  display: flex; /* flex */
+  align-items: center; /* items-center */
+  justify-content: space-between; /* justify-between */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+  transition: transform 0.2s ease-out; /* transition-transform duration-200 */
+  cursor: pointer; /* cursor-pointer */
+}
+
+.player-card:hover {
+  transform: translateX(0.25rem); /* hover:translate-x-1 */
+}
+
+.player-name {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 500; /* font-medium */
+  color: #5A32A3; /* text-purple-800 */
+}
+
+/* Removed player-name-input as it's now in modal */
+
+.player-role {
+  padding: 0.25rem 0.75rem; /* px-3 py-1 */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600; /* font-semibold */
+}
+
+.role-imposter {
+  background-color: #FECACA; /* bg-red-200 */
+  color: #991B1B; /* text-red-800 */
+}
+
+.role-footballer {
+  background-color: #D1FAE5; /* bg-green-200 */
+  color: #065F46; /* text-green-800 */
+}
+
+/* Action buttons styling */
+.action-buttons {
+  display: flex; /* flex */
+  flex-wrap: wrap; /* flex-wrap */
+  justify-content: center; /* justify-center */
+  gap: 1rem; /* gap-4 */
+}
+
+.add-player-btn,
+.start-game-btn {
+  color: #fff; /* text-white */
+  font-weight: 700; /* font-bold */
+  padding: 0.75rem 1.5rem; /* py-3 px-6 */
+  border-radius: 9999px; /* rounded-full */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+  transform: scale(1); /* initial transform for transition */
+  transition: all 0.3s ease-in-out; /* transform transition-all duration-300 */
+  border: none; /* remove default button border */
+  cursor: pointer;
+  outline: none; /* focus:outline-none */
+}
+
+.add-player-btn {
+  background-color: #10B981; /* bg-green-600 */
+}
+
+.add-player-btn:hover {
+  background-color: #059669; /* hover:bg-green-700 */
+  transform: scale(1.05); /* hover:scale-105 */
+}
+
+.add-player-btn:focus {
+  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.5); /* focus:ring-4 focus:ring-green-300 */
+}
+
+.start-game-btn {
+  background-color: #2563EB; /* bg-blue-600 */
+}
+
+.start-game-btn:hover {
+  background-color: #1D4ED8; /* hover:bg-blue-700 */
+  transform: scale(1.05); /* hover:scale-105 */
+}
+
+.start-game-btn:focus {
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.5); /* focus:ring-4 focus:ring-blue-300 */
+}
+
+/* Footer text styling */
+.footer-text {
+  text-align: center; /* text-center */
+  color: #6B7280; /* text-gray-500 */
+  font-size: 0.875rem; /* text-sm */
+  margin-top: 2rem; /* mt-8 */
+}
+
+/* Responsive adjustments for smaller screens (sm: breakpoint) */
+@media (min-width: 640px) { /* Corresponds to Tailwind's 'sm' breakpoint */
+  .game-title {
+    font-size: 3.75rem; /* text-6xl for sm: */
+  }
+
+  .player-grid {
+    grid-template-columns: repeat(2, 1fr); /* sm:grid-cols-2 */
   }
 }
 
-.App-header {
-  background-color: #282c34;
+/* --- Modal Specific Styles --- */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.modal-content {
+  background-color: transparent; /* Content itself doesn't have background, flip card does */
+  padding: 1rem; /* Some padding around the flip card */
+  border-radius: 1rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  max-width: 90%;
+  width: 400px; /* Fixed width for the modal card */
+  height: 300px; /* Fixed height for the modal card */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+  z-index: 1001; /* Above the modal content */
+  transition: color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  color: #ff4d4d;
+}
+
+/* --- Flip Card Styles --- */
+.flip-card {
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  perspective: 1000px; /* For 3D effect */
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s; /* Flip duration */
+  transform-style: preserve-3d; /* Keep children in 3D space */
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Hide the back of the card during flip */
+  backface-visibility: hidden;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  box-sizing: border-box; /* Include padding in width/height */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.flip-card-front {
+  background-color: #F3E8FF; /* Light purple for the front */
+  color: #5A32A3;
+}
+
+.flip-card-back {
+  background-color: #6A0DAD; /* Darker purple for the back */
+  color: white;
+  transform: rotateY(180deg); /* Initially rotated for the back */
+}
+
+.flip-card-front h3, .flip-card-back h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.player-name-input-modal {
+  width: 80%;
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.player-name-input-modal:focus {
+  border-color: #8B5CF6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+}
+
+.submit-name-btn, .close-role-btn {
+  background-color: #2563EB;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.submit-name-btn:hover, .close-role-btn:hover {
+  background-color: #1D4ED8;
+  transform: translateY(-2px);
+}
+
+.revealed-role-text {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.role-imposter-modal {
+  color: #FF6347; /* Tomato red for Imposter */
+}
+
+.role-footballer-modal {
+  color: #32CD32; /* Lime green for Footballer */
+}
+
+/* Basic body styles for Create React App */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+/* src/App.css (Add these new styles to your existing App.css) */
+
+/* --- Setup Screen Styles --- */
+.setup-container {
   min-height: 100vh;
+  background: linear-gradient(to bottom right, #4CAF50, #2196F3);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  padding: 1rem;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  text-align: center;
 }
 
-.App-link {
-  color: #61dafb;
+.setup-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.setup-input-group {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 350px;
+  text-align: left;
+}
+
+.setup-label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #E0F2F1; /* Light teal */
+}
+
+.setup-input {
+  width: calc(100% - 20px); /* Account for padding */
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.setup-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.setup-start-btn {
+  background-color: #FFC107; /* Amber for a vibrant start button */
+  color: #333;
+  font-weight: 700;
+  padding: 0.8rem 2.5rem;
+  border: none;
+  border-radius: 9999px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  margin-top: 2rem;
+}
+
+.setup-start-btn:hover {
+  background-color: #FFA000; /* Darker amber on hover */
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.setup-start-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments for Setup Screen */
+@media (max-width: 480px) {
+  .setup-title {
+    font-size: 2.5rem;
   }
-  to {
-    transform: rotate(360deg);
+  .setup-input-group {
+    max-width: 90%;
+  }
+  .setup-start-btn {
+    font-size: 1rem;
+    padding: 0.6rem 2rem;
   }
 }
